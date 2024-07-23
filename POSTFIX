@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>  // For isdigit()
+
+#define MAX_SIZE 100
+
+// Stack structure
+typedef struct {
+    int top;
+    int items[MAX_SIZE];
+} Stack;
+
+// Function to initialize the stack
+void initStack(Stack *s) {
+    s->top = -1;
+}
+
+// Function to check if the stack is empty
+int isEmpty(Stack *s) {
+    return s->top == -1;
+}
+
+// Function to check if the stack is full
+int isFull(Stack *s) {
+    return s->top == MAX_SIZE - 1;
+}
+
+// Function to push an element onto the stack
+void push(Stack *s, int value) {
+    if (isFull(s)) {
+        printf("Stack overflow\n");
+        exit(1);
+    }
+    s->items[++(s->top)] = value;
+}
+
+// Function to pop an element from the stack
+int pop(Stack *s) {
+    if (isEmpty(s)) {
+        printf("Stack underflow\n");
+        exit(1);
+    }
+    return s->items[(s->top)--];
+}
+
+// Function to evaluate a postfix expression
+int evaluatePostfix(char *exp) {
+    Stack stack;
+    initStack(&stack);
+
+    for (int i = 0; exp[i] != '\0'; i++) {
+        if (isdigit(exp[i])) {
+            push(&stack, exp[i] - '0');
+        } else {
+            int operand2 = pop(&stack);
+            int operand1 = pop(&stack);
+            switch (exp[i]) {
+                case '+':
+                    push(&stack, operand1 + operand2);
+                    break;
+                case '-':
+                    push(&stack, operand1 - operand2);
+                    break;
+                case '*':
+                    push(&stack, operand1 * operand2);
+                    break;
+                case '/':
+                    push(&stack, operand1 / operand2);
+                    break;
+                default:
+                    printf("Invalid operator\n");
+                    exit(1);
+            }
+        }
+    }
+
+    return pop(&stack);
+}
+
+int main() {
+    char exp[] = "23*4+"; // Postfix expression: 2*3+4
+    printf("Postfix expression: %s\n", exp);
+    printf("Result: %d\n", evaluatePostfix(exp));
+    return 0;
+}
